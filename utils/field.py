@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def generate_field_html(field_url, output, filename, ftp):
+def generate_field_html(field_url, output_directory, filename, ftp_directory):
     f = requests.get(field_url)
     parsed_json = f.json()
     players = parsed_json['Tournament']['Players']
@@ -113,4 +113,67 @@ def generate_field_html(field_url, output, filename, ftp):
     f.write(footer)
     f.close()
 
-    gpftp.upload_file_to_ftp(output, 'field.html', ftp)
+    gpftp.upload_file_to_ftp(output_directory, 'field.html', ftp_directory)
+
+def generate_php_file(output_directory, filename, ftp_directory):
+    f = open(filename, 'w')
+    header = '''<html>
+    <body>
+    '''
+
+    php = '''
+    <?php
+    $a = count($_POST['a']);
+    $b = count($_POST['b']);
+    $c = count($_POST['c']);
+    $d = count($+POST['d']);
+    
+    if ($a != 2) {
+        echo "Incorrect number of golfers (\\"" . $a . "\\") in Group A. Must select 2 players. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>:
+    } elseif ($b !3) {
+        echo "Incorrect number of golfers (\\"" . $b . "\\") in Group B. Must select 3 players. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>:
+    } elseif ($c != 2) {
+        echo "Incorrect number of golfers (\\"" . $c . "\\") in Group C. Must select 2 players. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>:
+    } elseif ($d !2) {
+        echo "Incorrect number of golfers (\\"" . $d . "\\") in Group D. Must select 2 players. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>:
+    } elseif (!isset($_POST['user']) || trim($_POST['user']) == '') {
+        echo "Team name was left blank. <br><a href=\\"#\\" onclick=\\"history.back();\\"Please try again</a>";
+    } elseif (!isset($_POST['tiebreaker']) || trim($_POST['tiebreaker']) == '') {
+        echo "Tiebreaker was left blank. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>";
+    } else {
+        $filename = str_replace(' ', '', $_POST["user"] . '.txt');
+        $checked_count = 0;
+        $post_length = count($_POST);
+        $roster = array();
+        echo "Your team has been submitted.\\n";
+        echo "<br><a href=\\"" . str_replace(' ', '', $_POST["user"] . '.html') . "\\">Go to your team</a> (Allow up to 2 minutes for update)\\n";
+        echo "<br><a href=\\"leaderboard.html\\">Go to Leaderboard</a>\\n";
+        echo "<br><a href=\\"../../\\">Go to Homepage</a>\\n";
+        foreach($_POST as $input) {
+            if (is_array($input)) {
+                foreach($input as $item) {
+                    $roster[$checked_count] = $item;
+                    $checked_count = $checked_count + 1;
+                }
+            }
+        }
+        
+        $data = $_POST["user"] . ': ' . $roster[0] . ", " . $roster[1] . ", " . $roster[2] . ", " . $roster[3] . ", " . $roster[4] . ", " . $roster[5] . ", " . $roster[6] . ", " . $roster[7] . ", " . $roster[8] . ': ' . $_POST["tiebreaker"];
+        file_put_contents("teams/" . $filename, $data);
+        $creation_page_text = "<html><head><meta http-equiv=\\"refresh\\" content=\\"20\\" /></head>Creating team page. Please allow up to 2 minutes for roster to appear.</html>";
+        file_put_contents(str_replace(' ','',$_POST["user"] . '.html'), $creation_page_text);
+    }
+    ?>
+    '''
+
+    footer = '''
+    </body>
+    </html>
+    '''
+
+    f.write(header)
+    f.write(php)
+    f.write(footer)
+    f.close()
+
+    gpftp.upload_file_to_ftp(output_directory, 'team_creation.php', ftp_directory)
