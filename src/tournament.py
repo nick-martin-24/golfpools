@@ -1,5 +1,6 @@
 import os
 import gpftp
+import field
 import datetime
 import requests
 import collections
@@ -139,6 +140,8 @@ class Tournament:
                 # create users.txt
                 Path('{}/users.txt'.format(self.__dirs['output'])).touch()
                 gpftp.create_ftp_dirs(self.__dirs['ftp'], self.__dirs['ftp-teams'])
+                field.generate_field_html(self.__dirs['output'], self.__files['field-html'], self.__dirs['ftp'])
+                field.generate_php_file(self.__dirs['output'], self.__dirs['ftp'])
 
     def get_teams(self):
         os.chdir(self.__dirs['output'])
