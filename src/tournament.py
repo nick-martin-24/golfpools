@@ -371,19 +371,19 @@ class Tournament:
             <td>Total</td>
         </tr>
         '''
-        if self.__pl['round_state'] != 'In Progress':
-            f.write(selected_golfer_header)
+        f.write(selected_golfer_header)
 
-        for guy in self.__sg:
-            f.write('<tr>')
-            f.write('    <td>{} ({})</td>'.format(guy, self.__sg[guy]['count']))
+        if self.__pl['round_state'] == 'In Progress':
+            for guy in self.__sg:
+                f.write('<tr>')
+                f.write('    <td>{} ({})</td>'.format(guy, self.__sg[guy]['count']))
 
-            if self.__sg[guy]['total'] == 0:
-                f.write('    <td align="center">E</td>')
-            else:
-                f.write('    <td align="center">{:+}</td>'.format(self.__sg[guy]['total']))
+                if self.__sg[guy]['total'] == 0:
+                    f.write('    <td align="center">E</td>')
+                else:
+                    f.write('    <td align="center">{:+}</td>'.format(self.__sg[guy]['total']))
 
-            f.write('</tr>')
+                f.write('</tr>')
 
         footer = '''
             </table>
