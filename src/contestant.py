@@ -4,7 +4,7 @@ import gpftp
 class Contestant:
 
     def __init__(self, t, name, roster, tiebreaker):
-        self.__full_html = '{}{}.html'.format(t.get_outdir(), name)
+        self.__full_html = '{}{}.html'.format(t.get_output_directory(), name)
         self.__html = '{}.html'.format(name)
         self.__name = name
         self.__tiebreaker = tiebreaker
@@ -67,7 +67,7 @@ class Contestant:
             self.process_golfer_rounds(golfer, self.__t.get_current_round())
 
         self.generate_html()
-        gpftp.upload_file_to_ftp(self.__t.get_outdir(), self.__html, self.__t.get_ftpdir())
+        gpftp.upload_file_to_ftp(self.__t.get_output_directory(), self.__html, self.__t.get_ftp_directory())
 
     def update_roster(self):
         for g in self.__roster:

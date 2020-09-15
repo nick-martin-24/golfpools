@@ -1,4 +1,5 @@
 from ftplib import FTP
+import glob
 
 user = '2096943'
 password = 'Bonner10!'
@@ -21,7 +22,7 @@ def create_ftp_dirs(ftp_dir, ftp_teams):
     ftp.quit()
 
 
-def get_teams_from_ftp(dirs):
+def get_teams_from_ftp(dirs, users_file):
     ftp = FTP(site, user, password)
     ftp.cwd(dirs['ftp-teams'])
     files = ftp.nlst()
@@ -32,3 +33,10 @@ def get_teams_from_ftp(dirs):
         file.close()
 
     ftp.quit()
+
+    with open(users_file, 'w') as outfile:
+        for filename in glob.glob('*.txt'):
+            if filename == users_file:
+                continue
+            with open(filename, 'r') as readfile:
+                outfile.write(readfile.read() + '\n')

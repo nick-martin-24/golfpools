@@ -4,8 +4,8 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def generate_field_html(output_directory, filename, ftp_directory):
-    field_url = get_current_field_url()
+def generate_field_html(tournament_id, output_directory, ftp_directory):
+    field_url = 'https://statdata.pgatour.com/r/{}/field.json'.format(tournament_id)
     player_names = get_current_field(field_url)
     owgr = get_top_60_in_current_field(player_names)
 
@@ -14,20 +14,10 @@ def generate_field_html(output_directory, filename, ftp_directory):
     b = owgr[10:25]
     c = owgr[25:40]
     d = owgr[40:]
+    filename = '{}/field.html'.format(output_directory)
     write_field_html(filename, a, b, c, d)
     gpftp.upload_file_to_ftp(output_directory, 'field.html', ftp_directory)
-
-
-def get_current_field_url():
-    schedule = 'https://statdata.pgatour.com/r/current/schedule-v2.json'
-    schedule_json = requests.get(schedule).json()
-    week = str(int(schedule_json['thisWeek']['weekNumber']) + 1)
-    year = schedule_json['years'][1]
-    tour = year['tours'][0]
-    current_tournament = next(item for item in tour['trns'] if item['date']['weekNumber'] == week
-                              and item['primaryEvent'] == 'Y')
-    tournament_code = current_tournament['permNum']
-    return 'https://statdata.pgatour.com/r/{}/field.json'.format(tournament_code)
+    return player_names
 
 
 def get_current_field(field_url):
@@ -100,10 +90,10 @@ def write_field_html(filename, a, b, c, d):
     for i in range(0, 10):
         one_to_ten += '''
             <tr>
-                <td><input type="checkbox" name="a[]" value"''' + a[i] + '''">''' + a[i] + '''</td>
-                <td><input type="checkbox" name="b[]" value"''' + b[i] + '''">''' + b[i] + '''</td>
-                <td><input type="checkbox" name="c[]" value"''' + c[i] + '''">''' + c[i] + '''</td>
-                <td><input type="checkbox" name="d[]" value"''' + d[i] + '''">''' + d[i] + '''</td>
+                <td><input type="checkbox" name="a[]" value="''' + a[i] + '''">''' + a[i] + '''</td>
+                <td><input type="checkbox" name="b[]" value="''' + b[i] + '''">''' + b[i] + '''</td>
+                <td><input type="checkbox" name="c[]" value="''' + c[i] + '''">''' + c[i] + '''</td>
+                <td><input type="checkbox" name="d[]" value="''' + d[i] + '''">''' + d[i] + '''</td>
             </tr>
     '''
 
@@ -112,26 +102,27 @@ def write_field_html(filename, a, b, c, d):
         eleven_to_fifteen += '''
             <tr>
                 <td> </td>
-                <td><input type="checkbox" name="b[]" value"''' + b[i] + '''">''' + b[i] + '''</td>
-                <td><input type="checkbox" name="c[]" value"''' + c[i] + '''">''' + c[i] + '''</td>
-                <td><input type="checkbox" name="d[]" value"''' + d[i] + '''">''' + d[i] + '''</td>
+                <td><input type="checkbox" name="b[]" value="''' + b[i] + '''">''' + b[i] + '''</td>
+                <td><input type="checkbox" name="c[]" value="''' + c[i] + '''">''' + c[i] + '''</td>
+                <td><input type="checkbox" name="d[]" value="''' + d[i] + '''">''' + d[i] + '''</td>
             </tr>
     '''
 
     sixteen_to_twenty = ''
-    for i in range(10, 15):
+    for i in range(15, 20):
         sixteen_to_twenty += '''
             <tr>
                 <td> </td>
                 <td> </td>
                 <td> </td>
-                <td><input type="checkbox" name="d[]" value"''' + d[i] + '''">''' + d[i] + '''</td>
+                <td><input type="checkbox" name="d[]" value="''' + d[i] + '''">''' + d[i] + '''</td>
             </tr>
     '''
 
     footer = '''
         </table><br>
         Tiebreaker: <input type="text" name="tiebreaker"> (Strokes to par of the winning golfer, i.e. -5, -13)<br><br>
+        <input type="submit" value="Submit">
     </form>
     '''
 
@@ -160,13 +151,13 @@ def generate_php_file(output_directory, ftp_directory):
     $d = count($_POST['d']);
     
     if ($a != 2) {
-        echo "Incorrect number of golfers (\\"" . $a . "\\") in Group A. Must select 2 players. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>":
+        echo "Incorrect number of golfers (\\"" . $a . "\\") in Group A. Must select 2 players. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>";
     } elseif ($b != 3) {
-        echo "Incorrect number of golfers (\\"" . $b . "\\") in Group B. Must select 3 players. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>":
+        echo "Incorrect number of golfers (\\"" . $b . "\\") in Group B. Must select 3 players. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>";
     } elseif ($c != 2) {
-        echo "Incorrect number of golfers (\\"" . $c . "\\") in Group C. Must select 2 players. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>":
-    } elseif ($d !2) {
-        echo "Incorrect number of golfers (\\"" . $d . "\\") in Group D. Must select 2 players. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>":
+        echo "Incorrect number of golfers (\\"" . $c . "\\") in Group C. Must select 2 players. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>";
+    } elseif ($d !=2) {
+        echo "Incorrect number of golfers (\\"" . $d . "\\") in Group D. Must select 2 players. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>";
     } elseif (!isset($_POST['user']) || trim($_POST['user']) == '') {
         echo "Team name was left blank. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>";
     } elseif (!isset($_POST['tiebreaker']) || trim($_POST['tiebreaker']) == '') {

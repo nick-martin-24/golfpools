@@ -22,15 +22,18 @@ class Tournament:
         self.__url_length = 158
         self.__json_url = ''
         self.__leaderboard_url = 'http://pgatour.com/leaderboard.html'
+        self.__tournament_id = ''
         self.__setup = {}
         self.__l = {}
         self.__pl = {}
         self.__sg = {}
+        self.__pga_ready_status = False
         self.__count_status = False
         self.__player_names = []
         self.__dirs = {}
         self.__files = {}
         self.__path = ''
+        self.set_tournament_id()
 
     def get_players(self):
         return self.__pl['players']
@@ -64,6 +67,23 @@ class Tournament:
 
     def get_count_status(self):
         return self.__count_status
+
+    def get_pga_ready_status(self):
+        return self.__pga_ready_status
+
+    def set_tournament_id(self):
+        schedule = 'https://statdata.pgatour.com/r/current/schedule-v2.json'
+        schedule_json = requests.get(schedule).json()
+        week = str(int(schedule_json['thisWeek']['weekNumber']) + 1)
+        year = schedule_json['years'][1]
+        tour = year['tours'][0]
+        current_tournament = next(item for item in tour['trns'] if item['date']['weekNumber'] == week
+                                  and item['primaryEvent'] == 'Y')
+        self.__tournament_id = current_tournament['permNum']
+        self.__setup['setup_year'] = year['year']
+        self.__pl['tournament_name'] = current_tournament['trnName']['official']
+        self.__pl['round_state'] = 'nah'
+        self.__pl['current_round'] = 0
 
     def select_golfer(self, name, data):
         if name not in self.__sg.keys():
@@ -101,18 +121,40 @@ class Tournament:
                 log.append(item['message'])
 
         idx = log[0].find(base)
-        self.__json_url = log[0][idx:idx + self.__url_length].replace('message', 'leaderboard-v2')
+        temp_url = log[0][idx:idx + self.__url_length].replace('message', 'leaderboard-v2')
+        bad_id_idx = temp_url.find('/r/') + 3
+        bad_id = temp_url[bad_id_idx:bad_id_idx+3]
+        self.__json_url = temp_url.replace(bad_id, self.__tournament_id)
 
     def parse_json(self):
         f = requests.get(self.__json_url)
-        parsed_json = f.json()
-        self.__setup = parsed_json['debug']
-        self.__pl = parsed_json['leaderboard']
+        if f.status_code == '200':
+            self.__pga_ready_status = True
+            parsed_json = f.json()
+            self.__setup = parsed_json['debug']
+            self.__pl = parsed_json['leaderboard']
 
-    def set_player_names(self):
-        for player in self.__pl['players']:
-            self.__player_names.append('{} {}'.format(player['player_bio']['first_name'].replace(',', ''),
-                                                      player['player_bio']['last_name'].replace(',', '')))
+    def initialize_field(self):
+        self.__pl['players'] = []
+        for golfer in range(0, len(self.__player_names)):
+            self.__pl['players'].append({})
+            self.__pl['players'][golfer]['current_round'] = None
+            self.__pl['players'][golfer]['total'] = 0
+            self.__pl['players'][golfer]['status'] = 'active'
+            self.__pl['players'][golfer]['today'] = 0
+            self.__pl['players'][golfer]['total_strokes'] = None
+            self.__pl['players'][golfer]['current_round'] = 1
+            self.__pl['players'][golfer]['rounds'] = [{'strokes': 0}, {'strokes': 0}, {'strokes': 0}, {'strokes': 0}]
+            self.__pl['players'][golfer]['thru'] = 0
+            self.__pl['players'][golfer]['day1'] = None
+            self.__pl['players'][golfer]['day2'] = None
+            self.__pl['players'][golfer]['day3'] = None
+            self.__pl['players'][golfer]['day4'] = None
+
+#    def set_player_names(self):
+#        for player in self.__pl['players']:
+#            self.__player_names.append('{} {}'.format(player['player_bio']['first_name'].replace(',', ''),
+#                                                      player['player_bio']['last_name'].replace(',', '')))
 
     def set_dirs_and_files(self, setup_type):
         if setup_type == 'init':
@@ -121,12 +163,12 @@ class Tournament:
 
         else:
             # directories
-            self.__dirs['ftp'] = 'golfpools.net/{}/{}/'.format(self.__setup['setup_year'],
-                                                               self.__pl['tournament_name'].replace(' ', ''))
+            self.__dirs['ftp'] = 'golfpools.net/{}/{}/'.format(str(int(self.__setup['setup_year']) - 1),
+                                                               self.__pl['tournament_name'].replace(' ', '').replace('.', ''))
             self.__dirs['golf'] = '{}/golf/'.format(os.getenv('HOME'))
             self.__dirs['output'] = '{}/{}/{}/'.format(self.__dirs['golf'],
-                                                       self.__setup['setup_year'],
-                                                       self.__pl['tournament_name'].replace(' ', ''))
+                                                       str(int(self.__setup['setup_year']) - 1),
+                                                       self.__pl['tournament_name'].replace(' ', '').replace('.', ''))
             self.__dirs['ftp-teams'] = '{}teams/'.format(self.__dirs['ftp'])
 
             # files
@@ -140,17 +182,21 @@ class Tournament:
                 # create users.txt
                 Path('{}/users.txt'.format(self.__dirs['output'])).touch()
                 gpftp.create_ftp_dirs(self.__dirs['ftp'], self.__dirs['ftp-teams'])
-                field.generate_field_html(self.__dirs['output'], self.__files['field-html'], self.__dirs['ftp'])
-                field.generate_php_file(self.__dirs['output'], self.__dirs['ftp'])
+            self.__player_names = field.generate_field_html(self.__tournament_id, self.__dirs['output'], self.__dirs['ftp'])
+            self.initialize_field()
+            field.generate_php_file(self.__dirs['output'], self.__dirs['ftp'])
 
     def get_teams(self):
         os.chdir(self.__dirs['output'])
-        gpftp.get_teams_from_ftp(self.__dirs)
+        gpftp.get_teams_from_ftp(self.__dirs, self.__files['users-file'])
 
     def initialize_leaderboard(self):
         with open(self.__files['users-file'], 'r') as f:
             count = 0
             for line in f:
+                print(line)
+                if line == '\n':
+                    continue
                 line = line[0:-1]
                 name = line.split(': ')[0]
                 name = name.replace('\\', '')
@@ -194,23 +240,25 @@ class Tournament:
         </head>
 
         <body>
-        <?php echo date('l, F jS, Y'); ?>
-        <?php 
-        $handle = fopen("counter.txt", "r");
-        if(!$handle){
-          echo "could not open the file" ;
-        }
-        else {
-              $counter = ( int ) fread ($handle,20) ;
-              fclose ($handle) ;
-              $counter++ ;
-              echo "you are visitor no $counter" ;
+        '''
+#        <?php echo date('l, F jS, Y'); ?>
+#        <?php
+#        $handle = fopen("counter.txt", "r");
+#        if(!$handle){
+#          echo "could not open the file" ;
+#        }
+#        else {
+#              $counter = ( int ) fread ($handle,20) ;
+#              fclose ($handle) ;
+#              $counter++ ;
+#              echo "you are visitor no $counter" ;
 
-              $handle = fopen("counter.txt", "w" ) ;
-              fwrite($handle,$counter) ;
-              fclose ($handle) ;
-            }
-        ?>
+#              $handle = fopen("counter.txt", "w" ) ;
+#              fwrite($handle,$counter) ;
+#              fclose ($handle) ;
+#            }
+#        ?>
+        header += '''
         <h1 align="center">''' + self.__pl['tournament_name'] + '''</h1>
         '''
         f.write(header)
@@ -300,7 +348,7 @@ class Tournament:
                 </tr>
             '''
         f.write(timestamp)
-        f.write(winnings)
+        # f.write(winnings)
         f.write(home)
         if self.__pl['round_state'] != 'In Progress':
             f.write(create_a_team)
@@ -323,7 +371,9 @@ class Tournament:
             <td>Total</td>
         </tr>
         '''
-        f.write(selected_golfer_header)
+        if self.__pl['round_state'] != 'In Progress':
+            f.write(selected_golfer_header)
+
         for guy in self.__sg:
             f.write('<tr>')
             f.write('    <td>{} ({})</td>'.format(guy, self.__sg[guy]['count']))

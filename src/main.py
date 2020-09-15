@@ -8,7 +8,7 @@ if '__main__' in __name__:
     t.set_dirs_and_files('init')
     t.set_json_url()
     t.parse_json()
-    t.set_player_names()
+#   t.set_player_names()
     t.set_dirs_and_files('full')
     t.get_teams()
     t.initialize_leaderboard()
