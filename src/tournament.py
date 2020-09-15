@@ -151,11 +151,6 @@ class Tournament:
             self.__pl['players'][golfer]['day3'] = None
             self.__pl['players'][golfer]['day4'] = None
 
-#    def set_player_names(self):
-#        for player in self.__pl['players']:
-#            self.__player_names.append('{} {}'.format(player['player_bio']['first_name'].replace(',', ''),
-#                                                      player['player_bio']['last_name'].replace(',', '')))
-
     def set_dirs_and_files(self, setup_type):
         if setup_type == 'init':
             self.__dirs['golfpools'] = '{}/projects/python/golfpools/'.format(os.getenv('HOME'))
