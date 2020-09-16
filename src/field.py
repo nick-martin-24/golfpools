@@ -8,6 +8,7 @@ def generate_field_html(tournament_id, output_directory, ftp_directory):
     field_url = 'https://statdata.pgatour.com/r/{}/field.json'.format(tournament_id)
     player_names = get_current_field(field_url)
     owgr = get_top_60_in_current_field(player_names)
+    write_field_txt(output_directory, player_names)
 
     # define tiers
     a = owgr[0:10]
@@ -54,6 +55,14 @@ def get_top_60_in_current_field(player_names):
             owgr.append(name)
             count += 1
     return owgr
+
+
+def write_field_txt(output_directory, player_names):
+    filename = '{}/field'.format(output_directory)
+    f = open(filename, 'w')
+    for player in player_names:
+        f.write('{}\n'.format(player))
+    f.close()
 
 
 def write_field_html(filename, a, b, c, d):

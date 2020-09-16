@@ -135,6 +135,11 @@ class Tournament:
             self.__pl = parsed_json['leaderboard']
 
     def initialize_field(self):
+        f = open(self.__files['field-txt'])
+        for line in f:
+            player = line[:-1]
+            self.__player_names.append(player)
+        f.close()
         self.__pl['players'] = []
         for golfer in range(0, len(self.__player_names)):
             self.__pl['players'].append({})
@@ -169,6 +174,7 @@ class Tournament:
             # files
             self.__files['html'] = '{}leaderboard.html'.format(self.__dirs['output'])
             self.__files['php-file'] = '{}team_creation.php'.format(self.__dirs['output'])
+            self.__files['field-txt'] = '{}field'.format(self.__dirs['output'])
             self.__files['users-file'] = '{}users.txt'.format(self.__dirs['output'])
             self.__files['field-html'] = '{}field.html'.format(self.__dirs['output'])
 
@@ -177,9 +183,9 @@ class Tournament:
                 # create users.txt
                 Path('{}/users.txt'.format(self.__dirs['output'])).touch()
                 gpftp.create_ftp_dirs(self.__dirs['ftp'], self.__dirs['ftp-teams'])
-            self.__player_names = field.generate_field_html(self.__tournament_id, self.__dirs['output'], self.__dirs['ftp'])
+                field.generate_field_html(self.__tournament_id, self.__dirs['output'], self.__dirs['ftp'])
+                field.generate_php_file(self.__dirs['output'], self.__dirs['ftp'])
             self.initialize_field()
-            field.generate_php_file(self.__dirs['output'], self.__dirs['ftp'])
 
     def get_teams(self):
         os.chdir(self.__dirs['output'])
