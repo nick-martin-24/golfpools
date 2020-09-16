@@ -15,6 +15,6 @@ if '__main__' in __name__:
     t.sort_selected_golfers()
     t.generate_html()
     gpftp.upload_file_to_ftp(t.get_output_directory(), t.get_html().split('/')[-1], t.get_ftp_directory())
-#    while True:
-#        t.update()
-#        time.sleep(60 - ((time.time() - start_time) % 60.0))
+    while True:
+        t.update()
+        time.sleep(60 - ((time.time() - start_time) % 60.0))
