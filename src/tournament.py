@@ -124,7 +124,7 @@ class Tournament:
         temp_url = log[0][idx:idx + self.__url_length].replace('message', 'leaderboard-v2')
         bad_id_idx = temp_url.find('/r/') + 3
         bad_id = temp_url[bad_id_idx:bad_id_idx+3]
-        self.__json_url = temp_url.replace(bad_id, self.__tournament_id)
+        self.__json_url = temp_url.replace(bad_id, self.__tournament_id).replace('2020', '2021')
 
     def parse_json(self):
         f = requests.get(self.__json_url)
