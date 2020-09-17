@@ -1,6 +1,8 @@
 import os
+import json
 import gpftp
 import field
+import urllib
 import datetime
 import requests
 import collections
@@ -127,12 +129,18 @@ class Tournament:
         self.__json_url = temp_url.replace(bad_id, self.__tournament_id).replace('2020', '2021')
 
     def parse_json(self):
-        f = requests.get(self.__json_url)
-        if f.status_code == '200':
+        response = urllib.request.urlopen(self.__json_url)
+        if response.code == 200:
             self.__pga_ready_status = True
-            parsed_json = f.json()
+            parsed_json = json.loads(response.read())
             self.__setup = parsed_json['debug']
             self.__pl = parsed_json['leaderboard']
+#        f = requests.get(self.__json_url)
+#        if f.status_code == '200':
+#            self.__pga_ready_status = True
+#            parsed_json = f.json()
+#            self.__setup = parsed_json['debug']
+#            self.__pl = parsed_json['leaderboard']
 
     def initialize_field(self):
         f = open(self.__files['field-txt'])
