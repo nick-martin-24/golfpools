@@ -10,7 +10,7 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.options import Options
 '''
-l = leaderboard
+l = golfpools leaderboard
 pl = pga_leaderboard
 sg = selected_golfers
 '''
