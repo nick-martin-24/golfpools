@@ -142,27 +142,32 @@ class Tournament:
 #            self.__setup = parsed_json['debug']
 #            self.__pl = parsed_json['leaderboard']
 
+    def set_player_names(self):
+        for player in self.__pl['players']:
+            self.__player_names.append('{} {}'.format(player['player_bio']['first_name'].replace(',', ''),
+                                                      player['player_bio']['last_name'].replace(',', '')))
+
     def initialize_field(self):
         f = open(self.__files['field-txt'])
-        for line in f:
-            player = line[:-1]
-            self.__player_names.append(player)
+#        for line in f:
+#            player = line[:-1]
+#            self.__player_names.append(player)
         f.close()
-        self.__pl['players'] = []
-        for golfer in range(0, len(self.__player_names)):
-            self.__pl['players'].append({})
-            self.__pl['players'][golfer]['current_round'] = None
-            self.__pl['players'][golfer]['total'] = 0
-            self.__pl['players'][golfer]['status'] = 'active'
-            self.__pl['players'][golfer]['today'] = 0
-            self.__pl['players'][golfer]['total_strokes'] = None
-            self.__pl['players'][golfer]['current_round'] = 1
-            self.__pl['players'][golfer]['rounds'] = [{'strokes': 0}, {'strokes': 0}, {'strokes': 0}, {'strokes': 0}]
-            self.__pl['players'][golfer]['thru'] = 0
-            self.__pl['players'][golfer]['day1'] = None
-            self.__pl['players'][golfer]['day2'] = None
-            self.__pl['players'][golfer]['day3'] = None
-            self.__pl['players'][golfer]['day4'] = None
+#        self.__pl['players'] = []
+#        for golfer in range(0, len(self.__player_names)):
+#            self.__pl['players'].append({})
+#            self.__pl['players'][golfer]['current_round'] = None
+#            self.__pl['players'][golfer]['total'] = 0
+#            self.__pl['players'][golfer]['status'] = 'active'
+#            self.__pl['players'][golfer]['today'] = 0
+#            self.__pl['players'][golfer]['total_strokes'] = None
+#            self.__pl['players'][golfer]['current_round'] = 1
+#            self.__pl['players'][golfer]['rounds'] = [{'strokes': 0}, {'strokes': 0}, {'strokes': 0}, {'strokes': 0}]
+#            self.__pl['players'][golfer]['thru'] = 0
+#            self.__pl['players'][golfer]['day1'] = None
+#            self.__pl['players'][golfer]['day2'] = None
+#            self.__pl['players'][golfer]['day3'] = None
+#            self.__pl['players'][golfer]['day4'] = None
 
     def set_dirs_and_files(self, setup_type):
         if setup_type == 'init':
@@ -341,7 +346,7 @@ class Tournament:
 
         winnings = '''
             <tr>
-                <td colspan="8" align="center">1st: $80, 2nd: $30, Last: $10</td>
+                <td colspan="8" align="center">1st: $80, 2nd: $20, Last: $10</td>
             </tr>
             '''
 
@@ -357,11 +362,11 @@ class Tournament:
                 </tr>
             '''
         f.write(timestamp)
-        # f.write(winnings)
+        f.write(winnings)
         f.write(home)
-        if self.__pl['round_state'] != 'In Progress':
-            f.write(create_a_team)
-        f.write('</table>')
+#        if self.__pl['round_state'] != 'In Progress':
+        f.write(create_a_team)
+#        f.write('</table>')
 
         selected_golfer_header = '''
         <table summary="selected_golfer" align="center" bgcolor="white" border="3" cellspacing="1"
@@ -382,7 +387,7 @@ class Tournament:
         '''
         f.write(selected_golfer_header)
 
-        if self.__pl['round_state'] == 'In Progress':
+        if self.__pl['round_state'] == 'In Progress' or self.__pl['round_state'] != 'In Progress':
             for guy in self.__sg:
                 f.write('<tr>')
                 f.write('    <td>{} ({})</td>'.format(guy, self.__sg[guy]['count']))

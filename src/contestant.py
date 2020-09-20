@@ -100,7 +100,7 @@ class Contestant:
                 self.start_team()
         elif current_round == 2:
             self.update_previous_day_score('day1', name)
-            if self.__team[name]['today'] is not None:
+            if self.__team[name]['today'] is not None or self.__team[name]['status'] == 'cut':
                 self.update_current_day_score('day2', name)
                 self.start_team()
             else:
@@ -136,12 +136,16 @@ class Contestant:
         self.__team[name]['penalty'] = penalty
         self.__penalty += penalty
         self.__missed_cuts += 1
+        self.__total += penalty
 
     def update_total(self, total):
         self.__total += total
 
     def update_current_day_score(self, day, name):
-        self.__days[day] += self.get_change(name)
+        if self.__team[name]['status'] == 'cut' and day == 'day2':
+            self.__days[day] += self.__team[name]['day2'] - self.__t.get_par()
+        else:
+            self.__days[day] += self.__team[name]['today']
 
     def update_previous_day_score(self, day, name):
         self.__days[day] += int(self.__team[name][day]) - self.__t.get_par()
