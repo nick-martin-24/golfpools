@@ -1,4 +1,5 @@
 import gpftp
+from datetime import datetime
 
 
 class Contestant:
@@ -88,6 +89,12 @@ class Contestant:
         self.__team[name]['day2'] = data['rounds'][1]['strokes']
         self.__team[name]['day3'] = data['rounds'][2]['strokes']
         self.__team[name]['day4'] = data['rounds'][3]['strokes']
+        if data['rounds'][3]['tee_time'] is not None:
+            date_str = data['rounds'][3]['tee_time']
+            date_obj = datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S')
+            self.__team[name]['tee_time'] = date_obj.time().isoformat()[0:5]
+        else:
+            self.__team[name]['tee_time'] = data['rounds'][3]['tee_time']
         if self.__team[name]['total'] is not None:
             self.update_total(self.__team[name]['total'])
 
@@ -217,7 +224,10 @@ class Contestant:
                         else:
                             f.write('        <td align="center">---</td>')
                     elif self.__team[golfer]['today'] is None:
-                        f.write('        <td align="center">---</td>')
+                        if i == 4:
+                            f.write('        <td align="center">{}</td>'.format(self.__team[golfer]['tee_time']))
+                        else:
+                            f.write('        <td align="center">---</td>')
                     elif self.__team[golfer]['today'] == 0:
                         f.write('        <td align="center">E (%s)</td>' % self.__team[golfer]['thru'])
                     else:
