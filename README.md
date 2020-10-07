@@ -1,13 +1,14 @@
+# golfpools
+
 Golf Pools
 ==========
 
 <enter description here>
 
 
-A Section
+Setup
 =========
-Setup: pip install -r requirements.txt
-<here is a section>
+pip install -r requirements.txt
 
 
 A Sub-Section
