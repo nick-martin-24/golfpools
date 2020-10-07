@@ -1,4 +1,4 @@
-from pgascraper.src.scrapeutils import utils
+from scrapeutils import utils
 
 
 # scrape test
