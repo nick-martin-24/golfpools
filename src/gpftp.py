@@ -1,4 +1,5 @@
 from ftplib import FTP
+import ftplib
 import glob
 
 user = '2096943'
@@ -17,8 +18,15 @@ def upload_file_to_ftp(path, filename, destination):
 
 def create_ftp_dirs(ftp_dir, ftp_teams):
     ftp = FTP(site, user, password)
-    ftp.mkd(ftp_dir)
-    ftp.mkd(ftp_teams)
+    try:
+        ftp.mkd(ftp_dir)
+    except ftplib.error_perm:
+        print('FTP directory {} already exists!'.format(ftp_dir))
+
+    try:
+        ftp.mkd(ftp_teams)
+    except ftplib.error_perm:
+        print('FTP directory  {} already exists!'.format(ftp_teams))
     ftp.quit()
 
 

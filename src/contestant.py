@@ -1,4 +1,4 @@
-import gpftp
+from golfpools.src import gpftp
 from datetime import datetime
 
 

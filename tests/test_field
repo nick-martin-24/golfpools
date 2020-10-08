@@ -1,0 +1,168 @@
+<html>
+    <head>
+    <style>
+    table, th, td {
+        border: 1px solid black;
+    }
+    </style>
+    </head>
+    
+    <body>
+
+    <form id="frm1" action = "team_creation.php" method="post">
+        <br><br>Your Name: <input type="text" name="user"><br><br><br>
+
+        <table style="width:80%">
+    
+            <tr>
+                <td>Group A (Select 2)</td>
+                <td>Group B (Select 3)</td>
+                <td>Group C (Select 2)</td>
+                <td>Group D (Select 2)</td>
+            </tr>
+    
+            <tr>
+                <td><input type="checkbox" name="a[]" value="Collin Morikawa">Collin Morikawa</td>
+                <td><input type="checkbox" name="b[]" value="Matt Kuchar">Matt Kuchar</td>
+                <td><input type="checkbox" name="c[]" value="Joel Dahmen">Joel Dahmen</td>
+                <td><input type="checkbox" name="d[]" value="Matt Jones">Matt Jones</td>
+            </tr>
+    
+            <tr>
+                <td><input type="checkbox" name="a[]" value="Bryson DeChambeau">Bryson DeChambeau</td>
+                <td><input type="checkbox" name="b[]" value="Ryan Palmer">Ryan Palmer</td>
+                <td><input type="checkbox" name="c[]" value="Adam Hadwin">Adam Hadwin</td>
+                <td><input type="checkbox" name="d[]" value="Brian Harman">Brian Harman</td>
+            </tr>
+    
+            <tr>
+                <td><input type="checkbox" name="a[]" value="Webb Simpson">Webb Simpson</td>
+                <td><input type="checkbox" name="b[]" value="Harris English">Harris English</td>
+                <td><input type="checkbox" name="c[]" value="Lanto Griffin">Lanto Griffin</td>
+                <td><input type="checkbox" name="d[]" value="Nate Lashley">Nate Lashley</td>
+            </tr>
+    
+            <tr>
+                <td><input type="checkbox" name="a[]" value="Patrick Cantlay">Patrick Cantlay</td>
+                <td><input type="checkbox" name="b[]" value="Kevin Na">Kevin Na</td>
+                <td><input type="checkbox" name="c[]" value="Rafa Cabrera Bello">Rafa Cabrera Bello</td>
+                <td><input type="checkbox" name="d[]" value="Dylan Frittelli">Dylan Frittelli</td>
+            </tr>
+    
+            <tr>
+                <td><input type="checkbox" name="a[]" value="Louis Oosthuizen">Louis Oosthuizen</td>
+                <td><input type="checkbox" name="b[]" value="Sergio Garcia">Sergio Garcia</td>
+                <td><input type="checkbox" name="c[]" value="Will Zalatoris">Will Zalatoris</td>
+                <td><input type="checkbox" name="d[]" value="Danny Lee">Danny Lee</td>
+            </tr>
+    
+            <tr>
+                <td><input type="checkbox" name="a[]" value="Matthew Wolff">Matthew Wolff</td>
+                <td><input type="checkbox" name="b[]" value="Jason Day">Jason Day</td>
+                <td><input type="checkbox" name="c[]" value="Francesco Molinari">Francesco Molinari</td>
+                <td><input type="checkbox" name="d[]" value="Harold Varner III">Harold Varner III</td>
+            </tr>
+    
+            <tr>
+                <td><input type="checkbox" name="a[]" value="Hideki Matsuyama">Hideki Matsuyama</td>
+                <td><input type="checkbox" name="b[]" value="Rickie Fowler">Rickie Fowler</td>
+                <td><input type="checkbox" name="c[]" value="Brandt Snedeker">Brandt Snedeker</td>
+                <td><input type="checkbox" name="d[]" value="Russell Henley">Russell Henley</td>
+            </tr>
+    
+            <tr>
+                <td><input type="checkbox" name="a[]" value="Paul Casey">Paul Casey</td>
+                <td><input type="checkbox" name="b[]" value="Chez Reavie">Chez Reavie</td>
+                <td><input type="checkbox" name="c[]" value="Cameron Champ">Cameron Champ</td>
+                <td><input type="checkbox" name="d[]" value="Nick Taylor">Nick Taylor</td>
+            </tr>
+    
+            <tr>
+                <td><input type="checkbox" name="a[]" value="Sungjae Im">Sungjae Im</td>
+                <td><input type="checkbox" name="b[]" value="Kevin Streelman">Kevin Streelman</td>
+                <td><input type="checkbox" name="c[]" value="Max Homa">Max Homa</td>
+                <td><input type="checkbox" name="d[]" value="Andrew Landry">Andrew Landry</td>
+            </tr>
+    
+            <tr>
+                <td><input type="checkbox" name="a[]" value="Abraham Ancer">Abraham Ancer</td>
+                <td><input type="checkbox" name="b[]" value="Joaquin Niemann">Joaquin Niemann</td>
+                <td><input type="checkbox" name="c[]" value="Doc Redman">Doc Redman</td>
+                <td><input type="checkbox" name="d[]" value="Troy Merritt">Troy Merritt</td>
+            </tr>
+    
+            <tr>
+                <td> </td>
+                <td><input type="checkbox" name="b[]" value="Jason Kokrak">Jason Kokrak</td>
+                <td><input type="checkbox" name="c[]" value="Charles Howell III">Charles Howell III</td>
+                <td><input type="checkbox" name="d[]" value="Keith Mitchell">Keith Mitchell</td>
+            </tr>
+    
+            <tr>
+                <td> </td>
+                <td><input type="checkbox" name="b[]" value="Cameron Smith">Cameron Smith</td>
+                <td><input type="checkbox" name="c[]" value="Keegan Bradley">Keegan Bradley</td>
+                <td><input type="checkbox" name="d[]" value="Zach Johnson">Zach Johnson</td>
+            </tr>
+    
+            <tr>
+                <td> </td>
+                <td><input type="checkbox" name="b[]" value="Tom Lewis">Tom Lewis</td>
+                <td><input type="checkbox" name="c[]" value="Rory Sabbatini">Rory Sabbatini</td>
+                <td><input type="checkbox" name="d[]" value="Andrew Putnam">Andrew Putnam</td>
+            </tr>
+    
+            <tr>
+                <td> </td>
+                <td><input type="checkbox" name="b[]" value="Byeong Hun An">Byeong Hun An</td>
+                <td><input type="checkbox" name="c[]" value="Harry Higgs">Harry Higgs</td>
+                <td><input type="checkbox" name="d[]" value="Richy Werenski">Richy Werenski</td>
+            </tr>
+    
+            <tr>
+                <td> </td>
+                <td><input type="checkbox" name="b[]" value="J.T. Poston">J.T. Poston</td>
+                <td><input type="checkbox" name="c[]" value="Brendan Steele">Brendan Steele</td>
+                <td><input type="checkbox" name="d[]" value="Charley Hoffman">Charley Hoffman</td>
+            </tr>
+    
+            <tr>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td><input type="checkbox" name="d[]" value="Mark Hubbard">Mark Hubbard</td>
+            </tr>
+    
+            <tr>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td><input type="checkbox" name="d[]" value="Luke List">Luke List</td>
+            </tr>
+    
+            <tr>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td><input type="checkbox" name="d[]" value="Scott Piercy">Scott Piercy</td>
+            </tr>
+    
+            <tr>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td><input type="checkbox" name="d[]" value="Henrik Norlander">Henrik Norlander</td>
+            </tr>
+    
+            <tr>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td><input type="checkbox" name="d[]" value="Vaughn Taylor">Vaughn Taylor</td>
+            </tr>
+    
+        </table><br>
+        Tiebreaker: <input type="text" name="tiebreaker"> (Strokes to par of the winning golfer, i.e. -5, -13)<br><br>
+        <input type="submit" value="Submit">
+    </form>
+    

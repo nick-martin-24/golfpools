@@ -1,71 +1,11 @@
-import urllib
-from golfpools.src import gpftp
-import requests
-from bs4 import BeautifulSoup
+from scrapeutils import pgatour
 
+def write_field_html(filename, field):
+    a = field['a']
+    b = field['b']
+    c = field['c']
+    d = field['d']
 
-def generate_field_html(tournament_id, output_directory, ftp_directory):
-    field_url = 'https://statdata.pgatour.com/r/{}/field.json'.format(tournament_id)
-    player_names = get_current_field(field_url)
-    owgr = get_top_60_in_current_field(player_names)
-    write_field_txt(output_directory, player_names)
-
-    # define tiers
-    a = owgr[0:10]
-    b = owgr[10:25]
-    c = owgr[25:40]
-    d = owgr[40:]
-    filename = '{}/field.html'.format(output_directory)
-    write_field_html(filename, a, b, c, d)
-    gpftp.upload_file_to_ftp(output_directory, 'field.html', ftp_directory)
-    return player_names
-
-
-def get_current_field(field_url):
-    # set player names from field of current tournament
-    f = requests.get(field_url)
-    parsed_json = f.json()
-    players = parsed_json['Tournament']['Players']
-    player_names = []
-    for item in players:
-        name = item['PlayerName'].split(', ')
-        player_names.append(' '.join((name[1], name[0])))
-    return player_names
-
-
-def get_top_60_in_current_field(player_names):
-    # get players from owgr and set the top 60 who are in the field of current tournament
-    # url = 'http://www.owgr.com/ranking?pageNo=1&pageSize=300$country=All'
-    url = 'http://www.owgr.com/ranking'
-    h = urllib.request.urlopen(url)
-    html = h.read()
-    soup = BeautifulSoup(html, 'html.parser')
-
-    tr = soup.find_all('tr')
-    tr = tr[1:]
-    owgr = []
-    count = 0
-    for item in tr:
-        name = item.contents[9].contents[0].contents[0]
-        if name[0:6] == 'Rafael':
-            name = 'Rafa Cabrera Bello'
-        if name == 'Peter Uihlein':
-            continue
-        if name in player_names and count < 60 and name != 'Scottie Scheffler':
-            owgr.append(name)
-            count += 1
-    return owgr
-
-
-def write_field_txt(output_directory, player_names):
-    filename = '{}/field'.format(output_directory)
-    f = open(filename, 'w')
-    for player in player_names:
-        f.write('{}\n'.format(player))
-    f.close()
-
-
-def write_field_html(filename, a, b, c, d):
     # write html file
     f = open(filename, 'w')
     header = '''<html>
@@ -145,8 +85,7 @@ def write_field_html(filename, a, b, c, d):
     f.close()
 
 
-def generate_php_file(output_directory, ftp_directory):
-    filename = '{}/team_creation.php'.format(output_directory)
+def write_php(filename):
     f = open(filename, 'w')
     header = '''<html>
     <body>
@@ -158,7 +97,7 @@ def generate_php_file(output_directory, ftp_directory):
     $b = count($_POST['b']);
     $c = count($_POST['c']);
     $d = count($_POST['d']);
-    
+
     if ($a != 2) {
         echo "Incorrect number of golfers (\\"" . $a . "\\") in Group A. Must select 2 players. <br><a href=\\"#\\" onclick=\\"history.back();\\">Please try again</a>";
     } elseif ($b != 3) {
@@ -188,7 +127,7 @@ def generate_php_file(output_directory, ftp_directory):
                 }
             }
         }
-        
+
         $data = $_POST["user"] . ': ' . $roster[0] . ", " . $roster[1] . ", " . $roster[2] . ", " . $roster[3] . ", " . $roster[4] . ", " . $roster[5] . ", " . $roster[6] . ", " . $roster[7] . ", " . $roster[8] . ': ' . $_POST["tiebreaker"];
         file_put_contents("teams/" . $filename, $data);
         $creation_page_text = "<html><head><meta http-equiv=\\"refresh\\" content=\\"20\\" /></head>Creating team page. Please allow up to 2 minutes for roster to appear.</html>";
@@ -207,4 +146,3 @@ def generate_php_file(output_directory, ftp_directory):
     f.write(footer)
     f.close()
 
-    gpftp.upload_file_to_ftp(output_directory, 'team_creation.php', ftp_directory)
