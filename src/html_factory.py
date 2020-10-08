@@ -146,3 +146,129 @@ def write_php(filename):
     f.write(footer)
     f.close()
 
+
+def write_user_html(user):
+        f = open(user.full_html, 'w')
+        header = '''<html>
+        <head>
+            <title>''' + user.name + '''</title>
+            <meta http-equiv="refresh" content="20" /></head>
+        </head>
+        '''
+
+        body_start = '''
+        <body>
+        <h2>''' + user.name + '''</h2>
+        '''
+
+        table_start = '''
+        <table border="3" cellspacing="1" cellpadding="1">
+        <caption>Roster</caption>
+
+        <tr>
+            <td><b>Golfer</b></td>
+            <td><b>Total</b></td>
+            <td><b>Round 1</b></td>
+            <td><b>Round 2</b></td>
+            <td><b>Round 3</b></td>
+            <td><b>Round 4</b></td>
+            <td><b>Penalty</b></td>
+        </tr>
+        '''
+
+        f.write(header)
+        f.write(body_start)
+        f.write(table_start)
+
+        for golfer in user.roster:
+            golfer_data = user.t.field['players'][golfer]
+            f.write('    <tr>')
+            if golfer_data['status'] == 'cut':
+                f.write('        <td>%s*</td>' % golfer)
+            else:
+                f.write('        <td>%s</td>' % golfer)
+
+            if golfer_data['total_strokes'] is None:
+                f.write('        <td align="center">---</td>')
+            elif golfer_data['total'] == 0:
+                f.write('        <td align="center">E</td>')
+            else:
+                f.write('        <td align="center">%+d</td>' % golfer_data['total'])
+
+            for i in range(1, 5):
+                if i == user.t.current_round():
+                    if golfer_data['status'] == 'cut':
+                        if i < 3:
+                            score = int(self.__team[golfer]['day' + str(i)]) - int(self.__t.get_par())
+                            if score == 0:
+                                f.write('        <td align="center">E</td>')
+                            else:
+                                f.write('        <td align="center">%+d</td>' % score)
+                        else:
+                            f.write('        <td align="center">---</td>')
+                    elif golfer_data['today'] is None:
+                        if i == 4:
+                            f.write('        <td align="center">{}</td>'.format(golfer_data['tee_time']))
+                        else:
+                            f.write('        <td align="center">---</td>')
+                    elif golfer_data['today'] == 0:
+                        f.write('        <td align="center">E (%s)</td>' % golfer_data['thru'])
+                    else:
+                        f.write('        <td align="center">%+d (%s)</td>' % (int(golfer_data['today']),
+                                                                              golfer_data['thru']))
+                elif golfer_data['current_round'] is None and golfer_data['status'] == 'active':
+                    f.write('        <td align="center">---</td>')
+                elif i > user.t.current_round():
+                    f.write('        <td align="center">---</td>')
+                elif golfer_data['rounds'][i-1] is None:
+                    f.write('        <td align="center">---</td>')
+                else:
+                    score = int(golfer_data['rounds'][i-1]) - int(user.t.par())
+                    if score == 0:
+                        f.write('        <td align="center">E</td>')
+                    else:
+                        f.write('        <td align="center">%+d</td>' % score)
+
+            if type(golfer_data['penalty']) == int:
+                f.write('    <td align="center">%+d</td>' % golfer_data['penalty'])
+            else:
+                f.write('    <td align="center">%s</td>' % golfer_data['penalty'])
+
+            f.write('    </tr>')
+
+        tiebreaker = '''
+        <tr>
+            <td>Tiebreaker</td>
+            <td align="center">''' + user.tiebreaker + '''</td>
+        '''
+
+        table_end = '''
+        </table>
+        '''
+
+        asterisk = '''
+        * = golfer missed cut; number of strokes over cut has been added to their total score
+        '''
+
+        holes_completed = '''
+        <br>(#) = holes completed today
+        '''
+
+        leaderboard_link = '''
+        <br><a href="leaderboard.html">Back to Leaderboard</a>
+        '''
+
+        body_end = '''
+        </body>
+        </html>
+        '''
+
+        f.write(tiebreaker)
+        f.write(table_end)
+        f.write(asterisk)
+        f.write(holes_completed)
+        f.write(leaderboard_link)
+        f.write(body_end)
+
+        f.close()
+
