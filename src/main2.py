@@ -1,12 +1,16 @@
-import time
 import gpftp
-import datetime
+import html_factory
 from scrapeutils import utils
 from tournament2 import Tournament
 
 
-start_time = time.time()
 t = Tournament()
-data = utils.scrape()
-t.set_dirs_and_files(data)
+t.data = utils.scrape()
+t.set_dirs_and_files()
 t.get_teams()
+t.process_golfpool_leaderboard()
+t.sort_golfpool_leaderboard()
+t.sort_selected_golfers()
+html_factory.write_leaderboard_html(t)
+gpftp.upload_file_to_ftp(t.dirs['output'], t.files['leaderboard-html'].split('/')[-1], t.dirs['ftp'])
+

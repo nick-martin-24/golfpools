@@ -1,4 +1,5 @@
-from scrapeutils import pgatour
+import datetime
+
 
 def write_field_html(filename, field):
     a = field['a']
@@ -181,7 +182,7 @@ def write_user_html(user):
         f.write(table_start)
 
         for golfer in user.roster:
-            golfer_data = user.t.field['players'][golfer]
+            golfer_data = user.t.data['players'][golfer]
             f.write('    <tr>')
             if golfer_data['status'] == 'cut':
                 f.write('        <td>%s*</td>' % golfer)
@@ -196,7 +197,7 @@ def write_user_html(user):
                 f.write('        <td align="center">%+d</td>' % golfer_data['total'])
 
             for i in range(1, 5):
-                if i == user.t.current_round():
+                if i == user.t.data['current_round']:
                     if golfer_data['status'] == 'cut':
                         if i < 3:
                             score = int(self.__team[golfer]['day' + str(i)]) - int(self.__t.get_par())
@@ -218,21 +219,21 @@ def write_user_html(user):
                                                                               golfer_data['thru']))
                 elif golfer_data['current_round'] is None and golfer_data['status'] == 'active':
                     f.write('        <td align="center">---</td>')
-                elif i > user.t.current_round():
+                elif i > user.t.data['current_round']:
                     f.write('        <td align="center">---</td>')
                 elif golfer_data['rounds'][i-1] is None:
                     f.write('        <td align="center">---</td>')
                 else:
-                    score = int(golfer_data['rounds'][i-1]) - int(user.t.par())
+                    score = golfer_data['rounds'][i-1]['strokes'] - user.t.data['par']
                     if score == 0:
                         f.write('        <td align="center">E</td>')
                     else:
                         f.write('        <td align="center">%+d</td>' % score)
 
-            if type(golfer_data['penalty']) == int:
+            if golfer_data['penalty'] != 0 and golfer_data['penalty'] is not None:
                 f.write('    <td align="center">%+d</td>' % golfer_data['penalty'])
             else:
-                f.write('    <td align="center">%s</td>' % golfer_data['penalty'])
+                f.write('    <td align="center">---</td>')
 
             f.write('    </tr>')
 
@@ -271,4 +272,174 @@ def write_user_html(user):
         f.write(body_end)
 
         f.close()
+
+
+
+def write_leaderboard_html(t):
+    f = open(t.files['leaderboard-html'], 'w')
+    header = '''<!DOCTYPE html>
+    <html>
+
+
+    <head>
+    <title>''' + t.data['name'] + '''</title>
+    <meta http-equiv="refresh" content="20" />
+    </head>
+    <body>
+    '''
+#    <?php echo date('l, F jS, Y'); ?>
+#    <?php
+#    $handle = fopen("counter.txt", "r");
+#    if(!$handle){
+#      echo "could not open the file" ;
+#    }
+#    else {
+#          $counter = ( int ) fread ($handle,20) ;
+#          fclose ($handle) ;
+#          $counter++ ;
+#          echo "you are visitor no $counter" ;
+
+#          $handle = fopen("counter.txt", "w" ) ;
+#          fwrite($handle,$counter) ;
+#          fclose ($handle) ;
+#        }
+#    ?>
+    header += '''
+    <h1 align="center">''' + t.data['name'] + '''</h1>
+    '''
+    f.write(header)
+
+    leaderboard_header = '''
+    <table summary="leaderboard" align="left" bgcolor="white" border="3" cellspacing="1" cellpadding="1"
+    style="display:inline-block; margin:auto">
+
+    <tr>
+    <td colspan="8" align="center">Leaderboard</td>
+    </tr>
+
+    <tr>
+        <td>Place</td>
+        <td>Team</td>
+        <td>Total</td>
+        <td>Day 1</td>
+        <td>Day 2</td>
+        <td>Day 3</td>
+        <td>Day 4</td>
+        <td>Penalty</td>
+    </tr>
+    '''
+    f.write(leaderboard_header)
+
+    place = 1
+    last_score = -999
+    for person in t.leaderboard:
+        f.write('<tr>')
+        if place == 1:
+            f.write('    <td align="center">%d</td>' % place)
+        elif t.leaderboard[person].total == last_score:
+            f.write('    <td align="center"></td>')
+        else:
+            f.write('    <td align="center">%d</td>' % place)
+
+        f.write('    <td>')
+        f.write(
+            '        <a href="%s.html">%s</a>' % (person, person))
+        f.write('    </td>')
+        last_score = t.leaderboard[person].total
+        place += 1
+
+        if t.leaderboard[person].total == 0:
+            f.write('    <td align="center">E</td>')
+        else:
+            f.write('    <td align="center">%+d</td>' % t.leaderboard[person].total)
+
+        for i in range(1, 5):
+            if i > t.data['current_round']:
+                f.write('    <td align="center">---</td>')
+            elif t.leaderboard[person].days['day{}'.format(i)] == 0:
+                f.write('    <td align="center">E</td>')
+            else:
+                f.write('    <td align="center">%+d</td>' % t.leaderboard[person].days['day{}'.format(i)])
+
+        if t.leaderboard[person].penalty != 0 and t.leaderboard[person].penalty is not None:
+            f.write('    <td align="center">%+d</td>' % t.leaderboard[person].penalty)
+        else:
+            f.write('    <td align="center">---</td>')
+
+        f.write('</tr>')
+
+    time = datetime.datetime.now().strftime('%I:%M %p')
+    date = datetime.datetime.now().strftime('%m-%d-%Y')
+    timestamp = '''
+        <tr>
+            <td colspan="8" align="center">Last updated at ''' + time + ''' on ''' + date + '''</td>
+        </tr>
+        '''
+
+    winnings = '''
+        <tr>
+            <td colspan="8" align="center">1st: $, 2nd: $, Last: $10</td>
+        </tr>
+        '''
+
+    home = '''
+        <tr>
+            <td colspan="8" align="center"><a href="../../">Home</a></td>
+        </tr>
+        '''
+
+    create_a_team = '''
+        <tr>
+            <td colspan="8" align="center"><a href="field.html">Create A Team</a></td>
+            </tr>
+        '''
+    f.write(timestamp)
+    f.write(winnings)
+    f.write(home)
+#    if self.__pl['round_state'] != 'In Progress':
+    f.write(create_a_team)
+#    f.write('</table>')
+
+    selected_golfer_header = '''
+    <table summary="selected_golfer" align="center" bgcolor="white" border="3" cellspacing="1"
+    cellpadding="1" style="display:inline-block; margin:auto">
+
+    <tr>
+    <td colspan="2" align="center">Selected Golfers</td>
+    </tr>
+
+    <tr>
+        <td colspan="2">(#)=# of teams w/golfer</td>
+    </tr>
+
+    <tr>
+        <td align="center">Player</td>
+        <td>Total</td>
+    </tr>
+    '''
+    f.write(selected_golfer_header)
+
+    if t.data['is_started']:
+        for guy in t.selected_golfers:
+            f.write('<tr>')
+            f.write('    <td>{} ({})</td>'.format(guy, t.selected_golfers[guy]['count']))
+
+            if t.selected_golfers[guy]['total'] == 0:
+                f.write('    <td align="center">E</td>')
+            else:
+                f.write('    <td align="center">{:+}</td>'.format(t.selected_golfers[guy]['total']))
+
+            f.write('</tr>')
+
+    footer = '''
+        </table>
+
+
+        </body>
+        </html>
+        '''
+
+    f.write(footer)
+
+    f.close()
 
