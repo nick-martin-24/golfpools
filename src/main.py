@@ -1,7 +1,7 @@
 import gpftp
 import html_factory
 from scrapeutils import utils
-from tournament2 import Tournament
+from tournament import Tournament
 
 
 t = Tournament()

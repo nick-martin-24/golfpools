@@ -4,7 +4,7 @@ from pathlib import Path
 from scrapeutils import pgatour
 from golfpools.src import gpftp
 from golfpools.src import html_factory
-from golfpools.src.contestant2 import Contestant
+from golfpools.src.contestant import Contestant
 
 
 class Tournament:
@@ -54,7 +54,7 @@ class Tournament:
         self.files['field-txt'] = '{}/field'.format(self.dirs['output'])
         self.files['users-file'] = '{}/users.txt'.format(self.dirs['output'])
         self.files['field-html'] = '{}/field.html'.format(self.dirs['output'])
-        self.files['chromedriver'] = '{}/data/chromedriver'.format(self.dirs['golfpools'])
+        self.files['chromedriver'] = '{}/ref/chromedriver'.format(self.dirs['golfpools'])
         self.files['leaderboard-html'] = '{}/leaderboard.html'.format(self.dirs['output'])
 
         if not os.path.exists(self.dirs['output']):

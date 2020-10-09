@@ -1,10 +1,12 @@
 from ftplib import FTP
 import ftplib
 import glob
+import os
 
-user = '2096943'
-password = 'Bonner10!'
-site = 'golfpools.net'
+
+user = os.environ['gp_user']
+password = os.environ['gp_pass']
+site = os.environ['gp_site']
 
 
 def upload_file_to_ftp(path, filename, destination):
