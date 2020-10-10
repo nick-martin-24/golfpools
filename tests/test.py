@@ -1,13 +1,14 @@
 from scrapeutils import utils, pgatour
-from golfpools.src.tournament2 import Tournament
+from golfpools.src.tournament import Tournament
 from golfpools.src import html_factory
 
 def scrape():
     # scrape test
     a = utils.scrape()
     p = a['players']
-    n = list(p.keys())[0]
-    r = p[n]['rounds'][0]
+    p_active = list(p.keys())[0]
+    p_cut = list(p.keys())[100]
+    r = p[p_active]['rounds'][0]
 
     print('Tournament:')
     for key in a:
@@ -15,11 +16,19 @@ def scrape():
             print('{}: {}'.format(key, a[key]))
 
     print()
-    print('Player')
-    print('name: {}'.format(n))
-    for key in p[n]:
+    print('Active Player:')
+    print('name: {}'.format(p_active))
+    for key in p[p_active]:
         if key != 'rounds':
-            print('{}: {}'.format(key, p[n][key]))
+            print('{}: {}'.format(key, p[p_active][key]))
+
+    if p[p_cut]['status'] == 'cut':
+        print()
+        print('Cut Player:')
+        print('name: {}'.format(p_cut))
+        for key in p[p_cut]:
+            if key != 'rounds':
+                print('{}: {}'.format(key, p[p_cut][key]))
 
     print()
     print('Round')

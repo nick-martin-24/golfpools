@@ -200,7 +200,7 @@ def write_user_html(user):
                 if i == user.t.data['current_round']:
                     if golfer_data['status'] == 'cut':
                         if i < 3:
-                            score = int(self.__team[golfer]['day' + str(i)]) - int(self.__t.get_par())
+                            score = golfer_data['day{}'.format(i-1)]
                             if score == 0:
                                 f.write('        <td align="center">E</td>')
                             else:
@@ -427,9 +427,12 @@ def write_leaderboard_html(t):
             if t.selected_golfers[guy]['total'] == 0:
                 f.write('    <td align="center">E</td>')
             else:
-                f.write('    <td align="center">{:+}</td>'.format(t.selected_golfers[guy]['total']))
+                f.write('    <td align="center">{:+}</td>'.format(t.selected_golfers[guy]['real_total']))
 
             f.write('</tr>')
+        f.write('<tr>')
+        f.write('    <td colspan="2" align="center">Scores do not include penalty</td>')
+        f.write('</tr>')
 
     footer = '''
         </table>

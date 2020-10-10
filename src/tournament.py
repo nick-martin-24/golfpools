@@ -25,16 +25,17 @@ class Tournament:
         self.path = ''
         self.data = {}
 
-    def select_golfer(self, name, total):
+    def select_golfer(self, name, total, real_total):
         if name not in self.selected_golfers.keys():
-            self.add_selected_golfer(name, total)
+            self.add_selected_golfer(name, total, real_total)
         else:
             self.increment_selected_golfer(name)
 
-    def add_selected_golfer(self, name, total):
+    def add_selected_golfer(self, name, total, real_total):
         self.selected_golfers[name] = {}
         self.selected_golfers[name]['count'] = 1
         self.selected_golfers[name]['total'] = total
+        self.selected_golfers[name]['real_total'] = real_total
 
     def increment_selected_golfer(self, name):
         self.selected_golfers[name]['count'] += 1

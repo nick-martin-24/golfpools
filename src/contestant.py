@@ -1,5 +1,5 @@
 from golfpools.src import gpftp
-import html_factory
+from golfpools.src import html_factory
 
 class Contestant:
 
@@ -18,10 +18,11 @@ class Contestant:
 
     def process_roster(self):
         for golfer in self.roster:
-            self.t.select_golfer(golfer, self.t.data['players'][golfer]['total'])
-            self.total += (self.t.data['players'][golfer]['total'] or 0) + \
-                            self.t.data['players'][golfer]['penalty']
+            self.t.select_golfer(golfer, self.t.data['players'][golfer]['total'], self.t.data['players'][golfer]['real_total'])
+            self.penalty += self.t.data['players'][golfer]['penalty']
+            self.total += (self.t.data['players'][golfer]['real_total'] or 0)
             self.compute_day_totals(self.t.data['players'][golfer])
+        self.total += self.penalty
 
         html_factory.write_user_html(self)
         gpftp.upload_file_to_ftp(self.t.dirs['output'], self.html, self.t.dirs['ftp'])
