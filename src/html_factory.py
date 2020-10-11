@@ -209,7 +209,7 @@ def write_user_html(user):
                             f.write('        <td align="center">---</td>')
                     elif golfer_data['today'] is None:
                         if i == 4:
-                            f.write('        <td align="center">{}</td>'.format(golfer_data['tee_time']))
+                            f.write('        <td align="center">{}</td>'.format(golfer_data['rounds'][i-1]['tee_time']))
                         else:
                             f.write('        <td align="center">---</td>')
                     elif golfer_data['today'] == 0:
@@ -217,14 +217,16 @@ def write_user_html(user):
                     else:
                         f.write('        <td align="center">%+d (%s)</td>' % (int(golfer_data['today']),
                                                                               golfer_data['thru']))
+                elif i >= 3 and golfer_data['status'] == 'cut':
+                    f.write('        <td align="center">---</td>')
                 elif golfer_data['current_round'] is None and golfer_data['status'] == 'active':
                     f.write('        <td align="center">---</td>')
                 elif i > user.t.data['current_round']:
                     f.write('        <td align="center">---</td>')
-                elif golfer_data['rounds'][i-1] is None:
+                elif golfer_data['rounds'][i-1] is None or golfer_data['rounds'][i-1] == '---':
                     f.write('        <td align="center">---</td>')
                 else:
-                    score = golfer_data['rounds'][i-1]['strokes'] - user.t.data['par']
+                    score = (golfer_data['rounds'][i-1]['strokes'] or user.t.data['par']) - user.t.data['par']
                     if score == 0:
                         f.write('        <td align="center">E</td>')
                     else:

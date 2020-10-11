@@ -2,6 +2,11 @@ from scrapeutils import utils, pgatour
 from golfpools.src.tournament import Tournament
 from golfpools.src import html_factory
 
+def get_current_tournament():
+    ct = utils.get_current_tournament()
+    for key in ct:
+        print('{}: {}'.format(key, ct[key]))
+
 def scrape():
     # scrape test
     a = utils.scrape()
