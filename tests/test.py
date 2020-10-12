@@ -7,6 +7,10 @@ def get_current_tournament():
     for key in ct:
         print('{}: {}'.format(key, ct[key]))
 
+def get_current_url():
+    tournament = utils.get_current_tournament()
+    return utils.get_urls(tournament)
+
 def scrape():
     # scrape test
     a = utils.scrape()
