@@ -24,6 +24,27 @@ class Tournament:
         self.files = {}
         self.path = ''
         self.data = {}
+        self.payout = {'1': {'1st': 10},
+                       '2': {'1st': 20},
+                       '3': {'1st': 30},
+                       '4': {'1st': 40},
+                       '5': {'1st': 50},
+                       '6': {'1st': 50, 'Last': 10},
+                       '7': {'1st': 60, 'Last': 10},
+                       '8': {'1st': 60, '2nd': 10, 'Last': 10},
+                       '9': {'1st': 70, '2nd': 10, 'Last': 10},
+                       '10': {'1st': 70, '2nd': 20, 'Last': 10},
+                       '11': {'1st': 80, '2nd': 20, 'Last': 10},
+                       '12': {'1st': 80, '2nd': 30, 'Last': 10},
+                       '13': {'1st': 90, '2nd': 30, 'Last': 10},
+                       '14': {'1st': 100, '2nd': 30, 'Last': 10},
+                       '15': {'1st': 100, '2nd': 40, 'Last': 10},
+                       '16': {'1st': 110, '2nd': 30, '3rd': 10, 'Last': 10},
+                       '17': {'1st': 110, '2nd': 40, '3rd': 10, 'Last': 10},
+                       '18': {'1st': 120, '2nd': 40, '3rd': 10, 'Last': 10},
+                       '19': {'1st': 120, '2nd': 50, '3rd': 10, 'Last': 10}}
+
+
 
     def select_golfer(self, name, total, real_total):
         if name not in self.selected_golfers.keys():

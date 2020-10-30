@@ -356,7 +356,7 @@ def write_leaderboard_html(t):
             f.write('    <td align="center">%+d</td>' % t.leaderboard[person].total)
 
         for i in range(1, 5):
-            if i > t.data['current_round']:
+            if i > t.data['current_round'] or t.data['is_started'] is False:
                 f.write('    <td align="center">---</td>')
             elif t.leaderboard[person].days['day{}'.format(i)] == 0:
                 f.write('    <td align="center">E</td>')
@@ -378,11 +378,18 @@ def write_leaderboard_html(t):
         </tr>
         '''
 
+    winnings_content = ''
+    for place in t.payout[str(len(t.leaderboard))].keys():
+        if place == 'Last':
+            winnings_content += '{}: ${}'.format(place, t.payout[str(len(t.leaderboard))][place])
+        else:
+            winnings_content += '{}: ${}, '.format(place, t.payout[str(len(t.leaderboard))][place])
+ 
     winnings = '''
         <tr>
-            <td colspan="8" align="center">1st: $, 2nd: $, Last: $10</td>
+            <td colspan="8" align="center">{}</td>
         </tr>
-        '''
+        '''.format(winnings_content)
 
     home = '''
         <tr>
