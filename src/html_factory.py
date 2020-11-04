@@ -379,11 +379,14 @@ def write_leaderboard_html(t):
         '''
 
     winnings_content = ''
-    for place in t.payout[str(len(t.leaderboard))].keys():
-        if place == 'Last':
-            winnings_content += '{}: ${}'.format(place, t.payout[str(len(t.leaderboard))][place])
-        else:
-            winnings_content += '{}: ${}, '.format(place, t.payout[str(len(t.leaderboard))][place])
+    if len(t.leaderboard) == 0:
+        winnings_content += '$0'
+    else:  
+        for place in t.payout[str(len(t.leaderboard))].keys():
+            if place == 'Last':
+                winnings_content += '{}: ${}'.format(place, t.payout[str(len(t.leaderboard))][place])
+            else:
+                winnings_content += '{}: ${}, '.format(place, t.payout[str(len(t.leaderboard))][place])
  
     winnings = '''
         <tr>
