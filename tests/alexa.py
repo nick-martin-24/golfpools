@@ -34,15 +34,24 @@ def get_tournaments_by_year(year):
     tournaments = [item for item in year_data[0] if item != '\n' and 'type' in item.attrs and item.attrs['type'] == 'tournament']
     return tournaments
 
+def get_tournament_names_by_year(year):
+    ul = get_html_element(HOME, 'ul')
+    year_data = [item for item in ul if 'value' in item.attrs and item.attrs['value'] == year]
+    tournaments = [item for item in year_data[0] if item != '\n' and 'type' in item.attrs and item.attrs['type'] == 'tournament']
+    tournament_names = [item.text for item in tournaments]
+    return tournament_names
+
 def get_tournament_data(year, tournament_name):
     year_data = get_tournaments_by_year(year)
     tournament = [t for t in year_data if t.contents[0].text.lower() == tournament_name]
     return tournament
 
 def get_years_in_history():
-    ul = get_heml_element(HOME, 'ul')
+    ul = get_html_element(HOME, 'ul')
     years_data = [item for item in ul if 'type' in item.attrs and item.attrs['type'] == 'year']
-    
+    years = []
+    for year in years_data:
+        years.append(year.attrs['value'])    
     return years
 
 def get_winner_by_tournament(tournament):
