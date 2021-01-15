@@ -1,4 +1,4 @@
-from scrapeutils import utils, pgatour
+from scrapeutils.golf import utils, pgatour
 from golfpools.src.tournament import Tournament
 from golfpools.src import html_factory
 

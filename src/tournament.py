@@ -1,7 +1,7 @@
 import os
 import collections
 from pathlib import Path
-from scrapeutils import pgatour
+from scrapeutils.golf import pgatour
 from golfpools.src import gpftp
 from golfpools.src import html_factory
 from golfpools.src.contestant import Contestant
