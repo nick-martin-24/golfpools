@@ -239,11 +239,18 @@ def write_user_html(user):
 
             f.write('    </tr>')
 
-        tiebreaker = '''
-        <tr>
-            <td>Tiebreaker</td>
-            <td align="center">''' + user.tiebreaker + '''</td>
-        '''
+        if user.t.data['is_started']:
+            tiebreaker = '''
+            <tr>
+                <td>Tiebreaker</td>
+                <td align="center">''' + user.tiebreaker + '''</td>
+            '''
+        else:
+            tiebreaker = '''
+            <tr>
+                <td>Tiebreaker</td>
+                <td align="center">---</td>
+            '''
 
         table_end = '''
         </table>
@@ -266,7 +273,9 @@ def write_user_html(user):
         </html>
         '''
 
-        f.write(tiebreaker)
+        if user.t.data['is_started']:
+            f.write(tiebreaker)
+
         f.write(table_end)
         f.write(asterisk)
         f.write(holes_completed)
@@ -284,8 +293,8 @@ def write_leaderboard_html(t):
 
 
     <head>
-    <title>''' + t.data['name'] + '''</title>
-    <meta http-equiv="refresh" content="20" />
+        <title>''' + t.data['name'] + '''</title>
+        <meta http-equiv="refresh" content="20" />
     </head>
     <body>
     '''
@@ -316,7 +325,7 @@ def write_leaderboard_html(t):
     style="display:inline-block; margin:auto">
 
     <tr>
-    <td colspan="8" align="center">Leaderboard</td>
+        <td colspan="8" align="center">Leaderboard</td>
     </tr>
 
     <tr>
@@ -335,40 +344,39 @@ def write_leaderboard_html(t):
     place = 1
     last_score = -999
     for person in t.leaderboard:
-        f.write('<tr>')
+        f.write('<tr>\n')
         if place == 1:
-            f.write('    <td align="center">%d</td>' % place)
+            f.write('        <td align="center">%d</td>\n' % place)
         elif t.leaderboard[person].total == last_score:
-            f.write('    <td align="center"></td>')
+            f.write('        <td align="center"></td>\n')
         else:
-            f.write('    <td align="center">%d</td>' % place)
+            f.write('        <td align="center">%d</td>\n' % place)
 
-        f.write('    <td>')
-        f.write(
-            '        <a href="%s.html">%s</a>' % (person, person))
-        f.write('    </td>')
+        f.write('        <td>')
+        f.write('<a href="%s.html">%s</a>' % (person, person))
+        f.write('</td>\n')
         last_score = t.leaderboard[person].total
         place += 1
 
         if t.leaderboard[person].total == 0:
-            f.write('    <td align="center">E</td>')
+            f.write('        <td align="center">E</td>\n')
         else:
-            f.write('    <td align="center">%+d</td>' % t.leaderboard[person].total)
+            f.write('        <td align="center">%+d</td>\n' % t.leaderboard[person].total)
 
         for i in range(1, 5):
             if i > t.data['current_round'] or t.data['is_started'] is False:
-                f.write('    <td align="center">---</td>')
+                f.write('        <td align="center">---</td>\n')
             elif t.leaderboard[person].days['day{}'.format(i)] == 0:
-                f.write('    <td align="center">E</td>')
+                f.write('        <td align="center">E</td>\n')
             else:
-                f.write('    <td align="center">%+d</td>' % t.leaderboard[person].days['day{}'.format(i)])
+                f.write('        <td align="center">%+d</td>\n' % t.leaderboard[person].days['day{}'.format(i)])
 
         if t.leaderboard[person].penalty != 0 and t.leaderboard[person].penalty is not None:
-            f.write('    <td align="center">%+d</td>' % t.leaderboard[person].penalty)
+            f.write('        <td align="center">%+d</td>\n' % t.leaderboard[person].penalty)
         else:
-            f.write('    <td align="center">---</td>')
+            f.write('        <td align="center">---</td>\n')
 
-        f.write('</tr>')
+        f.write('    </tr>\n')
 
     time = datetime.datetime.now().strftime('%I:%M %p')
     date = datetime.datetime.now().strftime('%m-%d-%Y')
@@ -389,22 +397,22 @@ def write_leaderboard_html(t):
                 winnings_content += '{}: ${}, '.format(place, t.payout[str(len(t.leaderboard))][place])
  
     winnings = '''
-        <tr>
-            <td colspan="8" align="center">{}</td>
-        </tr>
-        '''.format(winnings_content)
+    <tr>
+        <td colspan="8" align="center">{}</td>
+    </tr>
+    '''.format(winnings_content)
 
     home = '''
-        <tr>
-            <td colspan="8" align="center"><a href="../../">Home</a></td>
-        </tr>
-        '''
+    <tr>
+        <td colspan="8" align="center"><a href="../../">Home</a></td>
+    </tr>
+    '''
 
     create_a_team = '''
-        <tr>
-            <td colspan="8" align="center"><a href="field.html">Create A Team</a></td>
-            </tr>
-        '''
+    <tr>
+        <td colspan="8" align="center"><a href="field.html">Create A Team</a></td>
+    </tr>
+    '''
     f.write(timestamp)
     f.write(winnings)
     f.write(home)
@@ -417,7 +425,7 @@ def write_leaderboard_html(t):
     cellpadding="1" style="display:inline-block; margin:auto">
 
     <tr>
-    <td colspan="2" align="center">Selected Golfers</td>
+        <td colspan="2" align="center">Selected Golfers</td>
     </tr>
 
     <tr>
@@ -447,12 +455,12 @@ def write_leaderboard_html(t):
         f.write('</tr>')
 
     footer = '''
-        </table>
+    </table>
 
 
-        </body>
-        </html>
-        '''
+    </body>
+    </html>
+    '''
 
     f.write(footer)
 

@@ -1,6 +1,6 @@
 import gpftp
 import html_factory
-from scrapeutils import utils
+from scrapeutils.golf import utils
 from tournament import Tournament
 
 
