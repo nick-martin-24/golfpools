@@ -1,7 +1,7 @@
 import os
 import collections
 from pathlib import Path
-from scrapeutils.golf import pgatour
+from scrapeutils.golf import pgatour, utils
 from golfpools.src import gpftp
 from golfpools.src import html_factory
 from golfpools.src.contestant import Contestant
@@ -86,7 +86,7 @@ class Tournament:
             gpftp.create_ftp_dirs(self.dirs['ftp'], self.dirs['ftp-teams'])
 
         if not os.path.exists(self.files['field-html']):
-            html_factory.write_field_html(self.files['field-html'], pgatour.scrape_field(self.data['id']))
+            html_factory.write_field_html(self.files['field-html'], utils.generate_field(pgatour.scrape_field(self.data['id'])))
             gpftp.upload_file_to_ftp(self.dirs['output'] + '/', 'field.html', self.dirs['ftp'])
 
         if not os.path.exists(self.files['php-file']):
