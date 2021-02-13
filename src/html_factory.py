@@ -378,11 +378,14 @@ def write_leaderboard_html(t):
 
         f.write('    </tr>\n')
 
-    time = datetime.datetime.now().strftime('%I:%M %p')
-    date = datetime.datetime.now().strftime('%m-%d-%Y')
+    est = pytz.timezone('US/Eastern')
+    time_local = datetime.datetime.now()
+    time_est   = time_local.astimezone(est).strftime('%I:%M %p')
+    date_local = datetime.datetime.now()
+    date_est   = date_local.astimezone(est).strftime('%m-%d-%Y')
     timestamp = '''
         <tr>
-            <td colspan="8" align="center">Last updated at ''' + time + ''' on ''' + date + '''</td>
+            <td colspan="8" align="center">Last updated at ''' + time_est + ''' on ''' + date_est + '''</td>
         </tr>
         '''
 
