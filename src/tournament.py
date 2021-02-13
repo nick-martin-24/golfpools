@@ -2,9 +2,9 @@ import os
 import collections
 from pathlib import Path
 from scrapeutils.golf import pgatour, utils
-from golfpools.src import gpftp
-from golfpools.src import html_factory
-from golfpools.src.contestant import Contestant
+import gpftp
+import html_factory
+from contestant import Contestant
 
 
 class Tournament:
@@ -64,7 +64,7 @@ class Tournament:
     def set_dirs_and_files(self):
         # directories
         self.dirs['ftp'] = 'golfpools.net/{}/{}/'.format(self.data['actual_year'], self.data['name'].replace(' ', '').replace('.', ''))
-        self.dirs['golf'] = '{}/golf'.format(os.getenv('HOME'))
+        self.dirs['golf'] = '{}/data/golf'.format(os.getenv('HOME'))
         self.dirs['output'] = '{}/{}/{}'.format(self.dirs['golf'],
                                                 self.data['actual_year'],
                                                 self.data['name'].replace(' ', '').replace('.', ''))
